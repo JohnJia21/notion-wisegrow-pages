@@ -2,30 +2,23 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="theme-color" content="#17c3a2"/>
   <title>WiseGrow · 系统成长助手</title>
   <meta name="color-scheme" content="light dark"/>
   <style>
     :root{
-      --bg:#f7faf9;           /* 更明亮的底色 */
-      --text:#0b1720;
-      --muted:#5b6b73;
-      --border:#e6eeeb;
-      --card:#ffffff;
-      --brand1:#17c3a2;       /* 青绿 */
-      --brand2:#2563eb;       /* 靛蓝 */
-      --accent:#10b981;
-      --radius:18px;
+      --bg:#f7faf9; --text:#0b1720; --muted:#5b6b73; --border:#e6eeeb; --card:#ffffff;
+      --brand1:#17c3a2; --brand2:#2563eb; --radius:18px;
       --shadow:0 10px 28px rgba(3,18,7,.07);
       --inset: inset 0 2px 3px rgba(0,0,0,.06), inset 0 -2px 3px rgba(255,255,255,.8);
+      --tap: 44px; /* 最小触控尺寸 */
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
     }
     @media (prefers-color-scheme: dark){
       :root{
-        --bg:#0c1215;
-        --text:#e7ecef;
-        --muted:#96a2a8;
-        --border:#182024;
-        --card:#0f161a;
+        --bg:#0c1215; --text:#e7ecef; --muted:#96a2a8; --border:#182024; --card:#0f161a;
         --shadow:0 10px 30px rgba(0,0,0,.35);
         --inset: inset 0 2px 3px rgba(0,0,0,.5), inset 0 -2px 3px rgba(255,255,255,.05);
       }
@@ -35,30 +28,33 @@
     body{
       margin:0;background:var(--bg);color:var(--text);
       font-family: ui-sans-serif, -apple-system, "Segoe UI", Roboto, "PingFang SC","Noto Sans CJK SC","Microsoft YaHei", Arial;
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      padding-top: var(--safe-top); padding-bottom: var(--safe-bottom);
     }
 
     /* ===== Layout ===== */
-    .app{display:grid;grid-template-columns: 240px 1fr;min-height:100dvh}
+    .app{
+      display:grid;grid-template-columns: 240px 1fr;
+      min-height:100dvh; /* 新式视窗高度，避免移动端地址栏影响 */
+      min-height:100vh;  /* 回退 */
+    }
     .sidebar{
-      padding:16px 14px;border-right:1px solid var(--border);
+      padding:16px 14px;
+      border-right:1px solid var(--border);
       background: linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,0));
     }
-    .brand{
-      display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px;
-    }
+    .brand{display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:12px}
     .brand img{width:28px;height:28px;border-radius:10px;box-shadow:var(--shadow)}
     .brand .name{font-weight:800;letter-spacing:.2px}
-    .groupTitle{
-      margin:14px 8px 6px;font-size:11px;color:var(--muted);text-transform: lowercase;
-      letter-spacing:.8px;
-    }
+    .groupTitle{margin:14px 8px 6px;font-size:11px;color:var(--muted);text-transform:lowercase;letter-spacing:.8px}
     .nav{display:grid;gap:6px}
     .nav a{
       display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;
-      text-decoration:none;color:var(--text)
+      text-decoration:none;color:var(--text); min-height: var(--tap);
     }
     .nav a:hover{background:var(--card);box-shadow:var(--shadow)}
-    .main{display:flex;flex-direction:column;min-height:100dvh}
+
+    .main{display:flex;flex-direction:column}
     .topbar{
       height:56px;display:flex;align-items:center;justify-content:center;
       border-bottom:1px dashed var(--border);
@@ -75,45 +71,57 @@
       -webkit-background-clip:text;background-clip:text;color:transparent;
     }
 
-    /* ===== Ask Bar (与 ChatGPT 区分的浅浮雕风) ===== */
+    /* ===== Ask Bar ===== */
     .ask{
       width:100%;display:flex;align-items:center;gap:10px;padding:10px;
-      border-radius:48px;background:var(--card);box-shadow: var(--shadow), var(--inset);border:1px solid var(--border);
+      border-radius:48px;background:var(--card);
+      box-shadow: var(--shadow), var(--inset);border:1px solid var(--border);
     }
     .pill{
-      width:42px;height:42px;border-radius:50%;display:grid;place-items:center;
-      background:linear-gradient(180deg,#fff,rgba(255,255,255,0));
-      border:1px solid var(--border);box-shadow: var(--inset);
-      cursor:pointer;
+      width:var(--tap);height:var(--tap);border-radius:50%;display:grid;place-items:center;
+      background:linear-gradient(180deg,#fff,rgba(255,255,255,0)); border:1px solid var(--border);
+      box-shadow: var(--inset); cursor:pointer; flex:0 0 auto;
     }
     .inputWrap{flex:1;display:flex;align-items:center;padding:0 6px}
     input[type="text"]{
-      flex:1;height:48px;border:none;outline:none;background:transparent;color:var(--text);font-size:16px;
+      flex:1;height:48px;border:none;outline:none;background:transparent;color:var(--text);
+      font-size:16px; /* iOS 防止自动放大 */
     }
     .go{
-      height:42px;padding:0 16px;border:none;border-radius:21px;color:#fff;cursor:pointer;
-      background:linear-gradient(135deg,var(--brand1),var(--brand2));font-weight:700;
+      height:var(--tap);padding:0 16px;border:none;border-radius:21px;color:#fff;cursor:pointer;
+      background:linear-gradient(135deg,var(--brand1),var(--brand2));font-weight:700; flex:0 0 auto;
     }
 
-    /* ===== Example grid（左色条区分） ===== */
+    /* ===== Examples ===== */
     .examples{width:100%;display:grid;gap:12px;grid-template-columns:repeat(2,1fr)}
     .ex{
       position:relative;padding:14px 16px 14px 18px;border-radius:16px;background:var(--card);
-      border:1px solid var(--border);box-shadow:var(--shadow);font-size:14px;
+      border:1px solid var(--border);box-shadow:var(--shadow);font-size:14px;min-height:56px;
+      display:flex;align-items:center;cursor:pointer;
     }
     .ex::before{
       content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:16px 0 0 16px;
       background:linear-gradient(180deg,var(--brand1),var(--brand2));
     }
 
-    @media (max-width:1024px){.app{grid-template-columns:0 1fr}.sidebar{display:none}.hero{font-size:34px}}
-    @media (max-width:640px){.hero{font-size:26px}.examples{grid-template-columns:1fr}}
+    /* ===== Mobile ===== */
+    @media (max-width:1024px){
+      .app{grid-template-columns:0 1fr}
+      .sidebar{display:none}
+      .hero{font-size:34px}
+    }
+    @media (max-width:640px){
+      .hero{font-size:26px}
+      .examples{grid-template-columns:1fr}
+      .stage{padding:32px 12px}
+      .ask{border-radius:20px}
+    }
   </style>
 </head>
 <body>
 <div class="app">
   <!-- Sidebar -->
-  <aside class="sidebar">
+  <aside class="sidebar" aria-label="sidebar">
     <div class="brand">
       <img src="logo.png" alt="WiseGrow logo"/>
       <div class="name">WiseGrow</div>
@@ -135,40 +143,41 @@
 
     <div class="groupTitle">workspaces</div>
     <nav class="nav">
+      <a href="#"><span>结构卡系统</span></a>
     </nav>
   </aside>
 
   <!-- Main -->
   <main class="main">
-    <div class="topbar">
-      <div class="title">WiseGrow · 系统成长助手</div>
-    </div>
+    <div class="topbar"><div class="title">WiseGrow · 系统成长助手</div></div>
 
     <section class="stage">
       <div class="center">
-        <div class="hero">同学，准备好突破自我吗？</div>
+        <div class="hero">您今天在思考什么？</div>
 
         <form class="ask" id="askForm" autocomplete="off">
-          <div class="pill" title="新建">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6b7280" stroke-width="2"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
-          </div>
+          <button class="pill" type="button" title="新建">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6b7280" stroke-width="2">
+              <path d="M12 5v14M5 12h14" stroke-linecap="round"/>
+            </svg>
+          </button>
 
           <div class="inputWrap">
             <input id="q" type="text" placeholder="询问任何问题" aria-label="输入你的问题"/>
           </div>
 
-          <div class="pill" title="语音">
+          <button class="pill" type="button" title="语音">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#6b7280" stroke-width="2">
               <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 1 1-6 0V6a3 3 0 0 1 3-3z"/>
               <path d="M19 10v2a7 7 0 0 1-14 0v-2" stroke-linecap="round"/>
               <path d="M12 19v3" stroke-linecap="round"/>
             </svg>
-          </div>
+          </button>
 
           <button class="go" type="submit">开始</button>
         </form>
 
-        <div class="examples">
+        <div class="examples" id="examples">
           <div class="ex">帮我梳理一个【系统成长路径】的阶段划分</div>
           <div class="ex">生成一张【方法卡】：如何提升团队协作效率</div>
           <div class="ex">把这段复盘转成【结构卡】并给记忆要点</div>
@@ -180,7 +189,7 @@
 </div>
 
 <script>
-  // 提交占位逻辑：替换为你的后端或路由
+  // 提交占位逻辑：替换为你的后端/路由
   document.getElementById('askForm').addEventListener('submit', function(e){
     e.preventDefault();
     const q = (document.getElementById('q').value || '').trim();
@@ -189,13 +198,19 @@
   });
 
   // 示例点击填充
-  document.querySelectorAll('.ex').forEach(el=>{
-    el.style.cursor='pointer';
+  document.querySelectorAll('#examples .ex').forEach(el=>{
     el.addEventListener('click',()=>{
       document.getElementById('q').value = el.textContent.trim();
       document.getElementById('q').focus();
     });
   });
+
+  // 处理移动端 100vh 问题（可选）
+  const setVh = () => {
+    document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+  };
+  setVh();
+  window.addEventListener('resize', setVh);
 </script>
 </body>
 </html>
